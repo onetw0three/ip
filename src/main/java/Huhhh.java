@@ -1,6 +1,10 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Huhhh {
+    private static List<String> tasks = new ArrayList<>();
+
     private static String formatMessage(String msg) {
         return String.format(
             "    ____________________________________________________________\n" +
@@ -15,8 +19,18 @@ public class Huhhh {
         System.out.println(formatMessage(welcomeMsg));
     }
 
-    private static void echo(String msg) {
-        System.out.println(formatMessage(msg));
+    private static void add(String msg) {
+        tasks.add(msg);
+        System.out.println(formatMessage("added: " + msg));
+    }
+
+    private static void list() {
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < tasks.size(); i++) {
+            String line = String.format("%d. %s\n", i + 1, tasks.get(i));
+            out.append(line);
+        }
+        System.out.println(formatMessage(out.toString().trim()));
     }
 
     private static void goodbye() {
@@ -31,8 +45,11 @@ public class Huhhh {
             if (input.equals("bye")) {
                 goodbye();
                 break;
+            } else if (input.equals("list")) {
+                list();
+            } else {
+                add(input);
             }
-            echo(input);
         }
     }
 }
