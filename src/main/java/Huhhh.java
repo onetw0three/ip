@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Huhhh {
-    private static List<String> tasks = new ArrayList<>();
+    private static List<Task> tasks = new ArrayList<>();
 
     private static String formatMessage(String msg) {
         return String.format(
@@ -20,8 +20,20 @@ public class Huhhh {
     }
 
     private static void add(String msg) {
-        tasks.add(msg);
+        tasks.add(new Task(msg));
         System.out.println(formatMessage("added: " + msg));
+    }
+
+    private static void mark(int idx) {
+        tasks.get(idx).markAsDone();
+        System.out.println(formatMessage(
+                "Nice! I've marked this task as done:\n  " + tasks.get(idx)));
+    }
+
+    private static void unmark(int idx) {
+        tasks.get(idx).markUndone();
+        System.out.println(formatMessage(
+                "OK, I've marked this task as not done yet:\n  " + tasks.get(idx)));
     }
 
     private static void list() {
@@ -37,6 +49,11 @@ public class Huhhh {
         System.out.println(formatMessage("Bye. Hope to see you again soon!"));
     }
 
+    private static int parseIndex(String input) {
+        String[] args = input.split(" ");
+        return Integer.parseInt(args[1]) - 1;
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         greet();
@@ -47,6 +64,10 @@ public class Huhhh {
                 break;
             } else if (input.equals("list")) {
                 list();
+            } else if (input.startsWith("mark ")){
+                mark(parseIndex(input));
+            } else if (input.startsWith("unmark ")){
+                unmark(parseIndex(input));
             } else {
                 add(input);
             }
