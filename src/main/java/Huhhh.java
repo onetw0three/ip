@@ -19,10 +19,38 @@ public class Huhhh {
         System.out.println(formatMessage(welcomeMsg));
     }
 
-    private static void add(String msg) {
-        tasks.add(new Task(msg));
-        System.out.println(formatMessage("added: " + msg));
+    private static void addTask(Task newTask) {
+        tasks.add(newTask);
+        System.out.println(formatMessage(
+                "Got it. I've added this task:\n  " + newTask +
+                        "\nNow you have " + tasks.size() + " tasks in the list."));
     }
+
+    private static void addTodo(String msg) {
+        int startIndex = msg.indexOf(" ") + 1;
+        String desc = msg.substring(startIndex).trim();
+        addTask(new Todo(desc));
+    }
+
+    private static void addDeadline(String msg) {
+        int startIndex = msg.indexOf(" ") + 1;
+        int byIndex = msg.indexOf("/by");
+        String desc = msg.substring(startIndex, byIndex).trim();
+        String by = msg.substring(byIndex + 3).trim();
+        addTask(new Deadline(desc, by));
+
+    }
+
+    private static void addEvent(String msg) {
+        int startIndex = msg.indexOf(" ") + 1;
+        int fromIndex = msg.indexOf("/from");
+        int toIndex = msg.indexOf("/to");
+        String desc = msg.substring(startIndex, fromIndex).trim();
+        String from = msg.substring(fromIndex + 5, toIndex).trim();
+        String to = msg.substring(toIndex + 3).trim();
+        addTask(new Event(desc, from, to));
+    }
+
 
     private static void mark(int idx) {
         tasks.get(idx).markAsDone();
@@ -68,8 +96,12 @@ public class Huhhh {
                 mark(parseIndex(input));
             } else if (input.startsWith("unmark ")){
                 unmark(parseIndex(input));
-            } else {
-                add(input);
+            } else if (input.startsWith("todo ")){
+                addTodo(input);
+            } else if (input.startsWith("deadline ")){
+                addDeadline(input);
+            } else if (input.startsWith("event ")){
+                addEvent(input);
             }
         }
     }
