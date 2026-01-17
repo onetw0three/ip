@@ -66,6 +66,7 @@ public class Huhhh {
 
     private static void list() {
         StringBuilder out = new StringBuilder();
+        out.append("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.size(); i++) {
             String line = String.format("%d. %s\n", i + 1, tasks.get(i));
             out.append(line);
