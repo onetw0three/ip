@@ -132,32 +132,29 @@ public class Huhhh {
     }
 
     private static void processCommand(String input) throws HuhhhException {
-        if (input.trim().isEmpty()) {
-            throw new HuhhhException("Empty command provided.");
-        }
         String[] args = input.trim().split(" ", 2);
-        String command = args[0].toLowerCase();
+        Command command = Command.fromString(args[0]);
         String desc = args.length > 1 ? args[1] : "";
         switch (command) {
-            case "list":
+            case LIST:
                 list();
                 break;
-            case "mark":
+            case MARK:
                 mark(parseIndex(desc));
                 break;
-            case "unmark":
+            case UNMARK:
                 unmark(parseIndex(desc));
                 break;
-            case "delete":
+            case DELETE:
                 delete(parseIndex(desc));
                 break;
-            case "todo":
+            case TODO:
                 addTodo(desc);
                 break;
-            case "deadline":
+            case DEADLINE:
                 addDeadline(desc);
                 break;
-            case "event":
+            case EVENT:
                 addEvent(desc);
                 break;
             default:
