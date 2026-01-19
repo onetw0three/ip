@@ -95,6 +95,16 @@ public class Huhhh {
         System.out.println(formatMessage("OK, I've marked this task as not done yet:\n  " + tasks.get(idx)));
     }
 
+    private static void delete(int idx) throws HuhhhException {
+        if (idx < 0 || idx >= tasks.size()) {
+            throw new HuhhhException("Task index out of bounds. You have " + tasks.size() + " tasks.");
+        }
+        Task removed = tasks.remove(idx);
+        System.out.println(formatMessage(
+            "Noted. I've removed this task:\n " + removed +
+            "\nNow you have " + tasks.size() + " tasks in the list."));
+    }
+
     private static void list() {
         if (tasks.isEmpty()) {
             System.out.println(formatMessage("You have no tasks in your list."));
@@ -137,6 +147,9 @@ public class Huhhh {
                 break;
             case "unmark":
                 unmark(parseIndex(desc));
+                break;
+            case "delete":
+                delete(parseIndex(desc));
                 break;
             case "todo":
                 addTodo(desc);
