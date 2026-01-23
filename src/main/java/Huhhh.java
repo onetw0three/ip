@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -48,8 +50,7 @@ public class Huhhh {
             throw new HuhhhException(
                     "Deadline task must have a specified /by date.\nUsage: deadline <desc> /by <date>");
         }
-        addTask(new Deadline(desc, by));
-
+        addTask(new Deadline(desc, parseDate(by)));
     }
 
     private static void addEvent(String msg) throws HuhhhException {
@@ -133,6 +134,14 @@ public class Huhhh {
             return Integer.parseInt(input) - 1;
         } catch (NumberFormatException e) {
             throw new HuhhhException(String.format("Invalid task index provided: %s.", input));
+        }
+    }
+
+    private static LocalDate parseDate(String rawDate) throws HuhhhException {
+        try {
+            return LocalDate.parse(rawDate.trim());
+        } catch (DateTimeParseException e) {
+            throw new HuhhhException("Dates must follow the yyyy-mm-dd format (e.g., 2019-10-15).");
         }
     }
 

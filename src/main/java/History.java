@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +83,13 @@ public class History {
 			if (parts.length < 4) {
 				throw new HuhhhException("Corrupted deadline entry: " + line);
 			}
-			task = new Deadline(description, parts[3]);
+			LocalDate dueDate;
+			try {
+				dueDate = LocalDate.parse(parts[3]);
+			} catch (DateTimeParseException e) {
+				throw new HuhhhException("Corrupted deadline date: " + line);
+			}
+			task = new Deadline(description, dueDate);
 			break;
 		case "E":
 			if (parts.length < 5) {
