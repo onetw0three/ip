@@ -3,7 +3,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Huhhh {
-    private static List<Task> tasks = new ArrayList<>();
+    private static final History history = new History();
+    private static List<Task> tasks;
 
     private static String formatMessage(String msg) {
         return String.format(
@@ -18,8 +19,9 @@ public class Huhhh {
         System.out.println(formatMessage(welcomeMsg));
     }
 
-    private static void addTask(Task newTask) {
+    private static void addTask(Task newTask) throws HuhhhException {
         tasks.add(newTask);
+        persistTasks();
         System.out.println(formatMessage(
                 "Got it. I've added this task:\n  " + newTask +
                         "\nNow you have " + tasks.size() + " tasks in the list."));
@@ -84,6 +86,7 @@ public class Huhhh {
             throw new HuhhhException("Task index out of bounds. You have " + tasks.size() + " tasks.");
         }
         tasks.get(idx).markAsDone();
+        persistTasks();
         System.out.println(formatMessage("Nice! I've marked this task as done:\n  " + tasks.get(idx)));
     }
 
@@ -92,6 +95,7 @@ public class Huhhh {
             throw new HuhhhException("Task index out of bounds. You have " + tasks.size() + " tasks.");
         }
         tasks.get(idx).markUndone();
+        persistTasks();
         System.out.println(formatMessage("OK, I've marked this task as not done yet:\n  " + tasks.get(idx)));
     }
 
@@ -100,6 +104,7 @@ public class Huhhh {
             throw new HuhhhException("Task index out of bounds. You have " + tasks.size() + " tasks.");
         }
         Task removed = tasks.remove(idx);
+        persistTasks();
         System.out.println(formatMessage(
             "Noted. I've removed this task:\n " + removed +
             "\nNow you have " + tasks.size() + " tasks in the list."));
@@ -162,8 +167,23 @@ public class Huhhh {
         }
     }
 
+    private static void persistTasks() throws HuhhhException {
+        history.save(tasks);
+    }
+
+    private static void loadHistory() {
+        try {
+            tasks = history.load();
+        } catch (HuhhhException e) {
+            System.err.println(formatMessage(
+                    "Unable to load previous tasks, starting with an empty list.\n" + e.getMessage()));
+            tasks = new ArrayList<>();
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        loadHistory();
         greet();
         while (true) {
             String input = scanner.nextLine();
