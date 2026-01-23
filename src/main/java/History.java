@@ -1,0 +1,111 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+public class History {
+	private static final Path DEFAULT_PATH = Paths.get("data", "huhhh.txt");
+
+	private final Path saveFile;
+
+	public History() {
+		this(DEFAULT_PATH);
+	}
+
+	public History(Path saveFile) {
+		this.saveFile = saveFile;
+	}
+
+	public List<Task> load() throws HuhhhException {
+		ensureFileExists();
+		List<Task> loaded = new ArrayList<>();
+		try {
+			for (String line : Files.readAllLines(saveFile)) {
+				if (line.trim().isEmpty()) {
+					continue;
+				}
+				loaded.add(parse(line));
+			}
+		} catch (IOException e) {
+			throw new HuhhhException("Failed to read save file: " + e.getMessage());
+		}
+		return loaded;
+	}
+
+	public void save(List<Task> tasks) throws HuhhhException {
+		ensureFileExists();
+		List<String> serialized = new ArrayList<>();
+		for (Task task : tasks) {
+			serialized.add(task.serialisedString());
+		}
+		try {
+			Files.write(saveFile, serialized);
+		} catch (IOException e) {
+			throw new HuhhhException("Failed to write save file");
+		}
+	}
+
+	private void ensureFileExists() throws HuhhhException {
+		try {
+			Path parent = saveFile.getParent();
+			if (parent != null && !Files.exists(parent)) {
+				Files.createDirectories(parent);
+			}
+			if (!Files.exists(saveFile)) {
+				Files.createFile(saveFile);
+			}
+		} catch (IOException e) {
+			throw new HuhhhException("Unable to initialize save file");
+		}
+	}
+
+	private Task parse(String line) throws HuhhhException {
+		String[] parts = line.split("\\|");
+		for (int i = 0; i < parts.length; i++) {
+			parts[i] = parts[i].trim();
+		}
+		if (parts.length < 3) {
+			throw new HuhhhException("Corrupted save entry: " + line);
+		}
+		String type = parts[0];
+		boolean isDone = parseDone(parts[1], line);
+		String description = parts[2];
+		Task task;
+		switch (type) {
+		case "T":
+			task = new Todo(description);
+			break;
+		case "D":
+			if (parts.length < 4) {
+				throw new HuhhhException("Corrupted deadline entry: " + line);
+			}
+			task = new Deadline(description, parts[3]);
+			break;
+		case "E":
+			if (parts.length < 5) {
+				throw new HuhhhException("Corrupted event entry: " + line);
+			}
+			task = new Event(description, parts[3], parts[4]);
+			break;
+		default:
+			throw new HuhhhException("Unknown task type in save: " + type);
+		}
+		if (isDone) {
+			task.markAsDone();
+		}
+		return task;
+	}
+
+	private boolean parseDone(String value, String rawLine) throws HuhhhException {
+		if ("1".equals(value)) {
+			return true;
+		}
+		if ("0".equals(value)) {
+			return false;
+		}
+		throw new HuhhhException("Invalid completion flag in entry: " + rawLine);
+	}
+
+}
