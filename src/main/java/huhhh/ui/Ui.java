@@ -1,3 +1,7 @@
+package huhhh.ui;
+
+import huhhh.task.Task;
+import huhhh.task.TaskList;
 import java.util.Scanner;
 
 public class Ui {

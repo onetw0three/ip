@@ -1,3 +1,13 @@
+package huhhh;
+
+import huhhh.command.Parser;
+import huhhh.storage.Storage;
+import huhhh.task.Deadline;
+import huhhh.task.Event;
+import huhhh.task.Task;
+import huhhh.task.TaskList;
+import huhhh.task.Todo;
+import huhhh.ui.Ui;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 

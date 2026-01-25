@@ -1,3 +1,6 @@
+package huhhh.task;
+
+import huhhh.HuhhhException;
 import java.util.ArrayList;
 import java.util.List;
 
