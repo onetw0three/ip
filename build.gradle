@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.gradleup.shadow' version '9.3.1'
 }
 
 repositories {
@@ -28,11 +28,11 @@ test {
 }
 
 application {
-    mainClass.set("seedu.duke.Duke")
+    mainClass.set("huhhh.Huhhh")
 }
 
 shadowJar {
-    archiveBaseName = "duke"
+    archiveBaseName = "huhhh"
     archiveClassifier = null
 }
 
