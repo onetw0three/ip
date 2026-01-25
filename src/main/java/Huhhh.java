@@ -1,61 +1,128 @@
+import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class Huhhh {
-    private static final History history = new History();
-    private static List<Task> tasks;
 
-    private static String formatMessage(String msg) {
-        return String.format(
-                "    ____________________________________________________________\n" +
-                        "     %s\n" +
-                        "    ____________________________________________________________\n",
-                msg.replace("\n", "\n     "));
+    private final Storage storage;
+    private final TaskList tasks;
+    private final Ui ui;
+
+    public Huhhh() {
+        this(new Storage());
     }
 
-    private static void greet() {
-        String welcomeMsg = "Hello! I'm Huhhh\nWhat can I do for you?";
-        System.out.println(formatMessage(welcomeMsg));
+    public Huhhh(String filePath) {
+        this(filePath == null || filePath.isBlank()
+                ? new Storage()
+                : new Storage(Paths.get(filePath)));
     }
 
-    private static void addTask(Task newTask) throws HuhhhException {
-        tasks.add(newTask);
+    private Huhhh(Storage storage) {
+        this.ui = new Ui();
+        this.storage = storage;
+        this.tasks = loadTasks();
+    }
+
+    private TaskList loadTasks() {
+        try {
+            return new TaskList(storage.load());
+        } catch (HuhhhException e) {
+            ui.showLoadingError(e.getMessage());
+            return new TaskList();
+        }
+    }
+
+    public void run() {
+        ui.showWelcome();
+        boolean isExit = false;
+        while (!isExit) {
+            try {
+                Parser.ParsedCommand parsedCommand = Parser.parse(ui.readCommand());
+                isExit = execute(parsedCommand);
+            } catch (HuhhhException e) {
+                ui.showError(e.getMessage());
+            }
+        }
+        ui.close();
+    }
+
+    private boolean execute(Parser.ParsedCommand parsedCommand) throws HuhhhException {
+        switch (parsedCommand.getCommand()) {
+        case LIST:
+            ui.showTasks(tasks);
+            return false;
+        case MARK:
+            handleMark(parsedCommand.getArguments());
+            return false;
+        case UNMARK:
+            handleUnmark(parsedCommand.getArguments());
+            return false;
+        case DELETE:
+            handleDelete(parsedCommand.getArguments());
+            return false;
+        case TODO:
+            handleTodo(parsedCommand.getArguments());
+            return false;
+        case DEADLINE:
+            handleDeadline(parsedCommand.getArguments());
+            return false;
+        case EVENT:
+            handleEvent(parsedCommand.getArguments());
+            return false;
+        case BYE:
+            ui.showGoodbye();
+            return true;
+        default:
+            throw new HuhhhException("I'm sorry, but I don't know what that means :(");
+        }
+    }
+
+    private void handleMark(String arguments) throws HuhhhException {
+        Task task = tasks.mark(Parser.parseIndex(arguments));
         persistTasks();
-        System.out.println(formatMessage(
-                "Got it. I've added this task:\n  " + newTask +
-                        "\nNow you have " + tasks.size() + " tasks in the list."));
+        ui.showTaskMarked(task);
     }
 
-    private static void addTodo(String msg) throws HuhhhException {
-        if (msg.trim().isEmpty()) {
+    private void handleUnmark(String arguments) throws HuhhhException {
+        Task task = tasks.unmark(Parser.parseIndex(arguments));
+        persistTasks();
+        ui.showTaskUnmarked(task);
+    }
+
+    private void handleDelete(String arguments) throws HuhhhException {
+        Task task = tasks.delete(Parser.parseIndex(arguments));
+        persistTasks();
+        ui.showTaskRemoved(task, tasks.size());
+    }
+
+    private void handleTodo(String arguments) throws HuhhhException {
+        String description = arguments.trim();
+        if (description.isEmpty()) {
             throw new HuhhhException("Todo task must have a description.\nUsage: todo <desc>");
         }
-        addTask(new Todo(msg));
+        addTask(new Todo(description));
     }
 
-    private static void addDeadline(String msg) throws HuhhhException {
-        int byIndex = msg.indexOf("/by");
+    private void handleDeadline(String arguments) throws HuhhhException {
+        int byIndex = arguments.indexOf("/by");
         if (byIndex == -1) {
             throw new HuhhhException("Deadline task must have a /by clause.\nUsage: deadline <desc> /by <date>");
         }
-        String desc = msg.substring(0, byIndex).trim();
+        String desc = arguments.substring(0, byIndex).trim();
         if (desc.isEmpty()) {
             throw new HuhhhException("Deadline task must have a description.\nUsage: deadline <desc> /by <date>");
         }
-        String by = msg.substring(byIndex + 3).trim();
+        String by = arguments.substring(byIndex + 3).trim();
         if (by.isEmpty()) {
-            throw new HuhhhException(
-                    "Deadline task must have a specified /by date.\nUsage: deadline <desc> /by <date>");
+            throw new HuhhhException("Deadline task must have a specified /by date.\nUsage: deadline <desc> /by <date>");
         }
-        addTask(new Deadline(desc, parseDate(by)));
+        LocalDate dueDate = Parser.parseDate(by);
+        addTask(new Deadline(desc, dueDate));
     }
 
-    private static void addEvent(String msg) throws HuhhhException {
-        int fromIndex = msg.indexOf("/from");
-        int toIndex = msg.indexOf("/to");
+    private void handleEvent(String arguments) throws HuhhhException {
+        int fromIndex = arguments.indexOf("/from");
+        int toIndex = arguments.indexOf("/to");
         if (fromIndex == -1 || toIndex == -1) {
             throw new HuhhhException(
                     "Event task must have /from and /to clauses.\nUsage: event <desc> /from <date> /to <date>");
@@ -64,17 +131,17 @@ public class Huhhh {
             throw new HuhhhException(
                     "/from clause must come before /to clause.\nUsage: event <desc> /from <date> /to <date>");
         }
-        String desc = msg.substring(0, fromIndex).trim();
+        String desc = arguments.substring(0, fromIndex).trim();
         if (desc.isEmpty()) {
             throw new HuhhhException(
                     "Event task must have a description.\nUsage: event <desc> /from <date> /to <date>");
         }
-        String from = msg.substring(fromIndex + 5, toIndex).trim();
+        String from = arguments.substring(fromIndex + 5, toIndex).trim();
         if (from.isEmpty()) {
             throw new HuhhhException(
                     "Event task must have a specified /from date.\nUsage: event <desc> /from <date> /to <date>");
         }
-        String to = msg.substring(toIndex + 3).trim();
+        String to = arguments.substring(toIndex + 3).trim();
         if (to.isEmpty()) {
             throw new HuhhhException(
                     "Event task must have a specified /to date.\nUsage: event <desc> /from <date> /to <date>");
@@ -82,130 +149,18 @@ public class Huhhh {
         addTask(new Event(desc, from, to));
     }
 
-    private static void mark(int idx) throws HuhhhException {
-        if (idx < 0 || idx >= tasks.size()) {
-            throw new HuhhhException("Task index out of bounds. You have " + tasks.size() + " tasks.");
-        }
-        tasks.get(idx).markAsDone();
+    private void addTask(Task task) throws HuhhhException {
+        tasks.add(task);
         persistTasks();
-        System.out.println(formatMessage("Nice! I've marked this task as done:\n  " + tasks.get(idx)));
+        ui.showTaskAdded(task, tasks.size());
     }
 
-    private static void unmark(int idx) throws HuhhhException {
-        if (idx < 0 || idx >= tasks.size()) {
-            throw new HuhhhException("Task index out of bounds. You have " + tasks.size() + " tasks.");
-        }
-        tasks.get(idx).markUndone();
-        persistTasks();
-        System.out.println(formatMessage("OK, I've marked this task as not done yet:\n  " + tasks.get(idx)));
-    }
-
-    private static void delete(int idx) throws HuhhhException {
-        if (idx < 0 || idx >= tasks.size()) {
-            throw new HuhhhException("Task index out of bounds. You have " + tasks.size() + " tasks.");
-        }
-        Task removed = tasks.remove(idx);
-        persistTasks();
-        System.out.println(formatMessage(
-            "Noted. I've removed this task:\n " + removed +
-            "\nNow you have " + tasks.size() + " tasks in the list."));
-    }
-
-    private static void list() {
-        if (tasks.isEmpty()) {
-            System.out.println(formatMessage("You have no tasks in your list."));
-            return;
-        }
-        StringBuilder out = new StringBuilder();
-        out.append("Here are the tasks in your list:\n");
-        for (int i = 0; i < tasks.size(); i++) {
-            String line = String.format("%d. %s\n", i + 1, tasks.get(i));
-            out.append(line);
-        }
-        System.out.println(formatMessage(out.toString().trim()));
-    }
-
-    private static void goodbye() {
-        System.out.println(formatMessage("Bye. Hope to see you again soon!"));
-    }
-
-    private static int parseIndex(String input) throws HuhhhException {
-        try {
-            return Integer.parseInt(input) - 1;
-        } catch (NumberFormatException e) {
-            throw new HuhhhException(String.format("Invalid task index provided: %s.", input));
-        }
-    }
-
-    private static LocalDate parseDate(String rawDate) throws HuhhhException {
-        try {
-            return LocalDate.parse(rawDate.trim());
-        } catch (DateTimeParseException e) {
-            throw new HuhhhException("Dates must follow the yyyy-mm-dd format (e.g., 2019-10-15).");
-        }
-    }
-
-    private static void processCommand(String input) throws HuhhhException {
-        String[] args = input.trim().split(" ", 2);
-        Command command = Command.fromString(args[0]);
-        String desc = args.length > 1 ? args[1] : "";
-        switch (command) {
-            case LIST:
-                list();
-                break;
-            case MARK:
-                mark(parseIndex(desc));
-                break;
-            case UNMARK:
-                unmark(parseIndex(desc));
-                break;
-            case DELETE:
-                delete(parseIndex(desc));
-                break;
-            case TODO:
-                addTodo(desc);
-                break;
-            case DEADLINE:
-                addDeadline(desc);
-                break;
-            case EVENT:
-                addEvent(desc);
-                break;
-            default:
-                throw new HuhhhException("I'm sorry, but I don't know what that means :(");
-        }
-    }
-
-    private static void persistTasks() throws HuhhhException {
-        history.save(tasks);
-    }
-
-    private static void loadHistory() {
-        try {
-            tasks = history.load();
-        } catch (HuhhhException e) {
-            System.err.println(formatMessage(
-                    "Unable to load previous tasks, starting with an empty list.\n" + e.getMessage()));
-            tasks = new ArrayList<>();
-        }
+    private void persistTasks() throws HuhhhException {
+        storage.save(tasks);
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        loadHistory();
-        greet();
-        while (true) {
-            String input = scanner.nextLine();
-            if (input.equals("bye")) {
-                goodbye();
-                break;
-            }
-            try {
-                processCommand(input);
-            } catch (HuhhhException e) {
-                System.err.println(formatMessage(e.getMessage()));
-            }
-        }
-        scanner.close();
+        Huhhh huhhh = args.length > 0 ? new Huhhh(args[0]) : new Huhhh();
+        huhhh.run();
     }
 }

@@ -7,16 +7,16 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class History {
+public class Storage {
 	private static final Path DEFAULT_PATH = Paths.get("data", "huhhh.txt");
 
 	private final Path saveFile;
 
-	public History() {
+	public Storage() {
 		this(DEFAULT_PATH);
 	}
 
-	public History(Path saveFile) {
+	public Storage(Path saveFile) {
 		this.saveFile = saveFile;
 	}
 
@@ -36,14 +36,10 @@ public class History {
 		return loaded;
 	}
 
-	public void save(List<Task> tasks) throws HuhhhException {
+	public void save(TaskList tasks) throws HuhhhException {
 		ensureFileExists();
-		List<String> serialized = new ArrayList<>();
-		for (Task task : tasks) {
-			serialized.add(task.serialisedString());
-		}
 		try {
-			Files.write(saveFile, serialized);
+			Files.write(saveFile, tasks.serialisedList());
 		} catch (IOException e) {
 			throw new HuhhhException("Failed to write save file");
 		}
