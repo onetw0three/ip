@@ -99,12 +99,30 @@ public class Huhhh {
         case EVENT:
             handleEvent(parsedCommand.getArguments());
             return false;
+        case FIND:
+            handleFind(parsedCommand.getArguments());
+            return false;
         case BYE:
             ui.showGoodbye();
             return true;
         default:
             throw new HuhhhException("I'm sorry, but I don't know what that means :(");
         }
+    }
+
+    /**
+     * Handles the 'find' command to find a task from a keyword,
+     * and shows the list of tasks foudn.
+     *
+     * @param arguments The arguments containing the task index.
+     * @throws HuhhhException If an error occurs during marking.
+     */
+    private void handleFind(String arguments) throws HuhhhException {
+        String keyword = arguments.trim();
+        if (keyword.isEmpty()) {
+            throw new HuhhhException("Find command requires a keyword to search for.\nUsage: find <keyword>");
+        }
+        ui.showFoundTasks(tasks.findTasks(keyword));
     }
 
     /**

@@ -78,7 +78,7 @@ public class Ui {
      * @param tasks The TaskList containing the tasks to be displayed.
      */
     public void showTasks(TaskList tasks) {
-        showMessage(tasks.toString());
+        showMessage("Here are the tasks in your list:\n" + tasks);
     }
 
     /**
@@ -106,6 +106,15 @@ public class Ui {
      */
     public void showMessage(String message) {
         System.out.println(formatMessage(message));
+    }
+
+    /**
+     * Displays the list of tasks found to the user
+     *
+     * @param foundTasks List of tasks that are found from the search
+     */
+    public void showFoundTasks(TaskList foundTasks) {
+        showMessage("Here are the matching tasks in your list:\n" + foundTasks);
     }
 
     /**

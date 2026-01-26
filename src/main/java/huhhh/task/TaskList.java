@@ -101,6 +101,19 @@ public class TaskList {
     }
 
     /**
+     * Retrieves all the tasks that have a matching keyword in
+     * its description
+     *
+     * @param keyword String to match in the description
+     * @return
+     */
+    public TaskList findTasks(String keyword) {
+        return new TaskList(tasks.stream().
+                filter(task -> task.containsKeyword(keyword))
+                .toList());
+    }
+
+    /**
      * Serializes the task list into a list of strings for storage.
      *
      * @return A list of serialized task strings.
@@ -119,7 +132,6 @@ public class TaskList {
         }
 
         StringBuilder builder = new StringBuilder();
-        builder.append("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.size(); i++) {
             builder.append(i + 1).append(". ").append(tasks.get(i));
             if (i < tasks.size() - 1) {

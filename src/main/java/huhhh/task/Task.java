@@ -14,6 +14,16 @@ public abstract class Task {
     }
 
     /**
+     * Returns true if keyword is in the task description
+     *
+     * @param keyword String to search for in the description
+     * @return true if a keyword is found in the description
+     */
+    public Boolean containsKeyword(String keyword) {
+        return description.contains(keyword);
+    }
+
+    /**
      * Returns the status icon representing whether the task is done.
      *
      * @return "X" if the task is done, otherwise a space " ".
