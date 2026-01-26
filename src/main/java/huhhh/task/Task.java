@@ -9,6 +9,10 @@ public abstract class Task {
         this.isDone = false;
     }
 
+    public Boolean containsKeyword(String keyword) {
+        return description.contains(keyword);
+    }
+
     public String getStatusIcon() {
         return (isDone ? "X" : " "); // mark done task with X
     }

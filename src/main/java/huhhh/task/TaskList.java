@@ -53,6 +53,12 @@ public class TaskList {
         return tasks.get(index);
     }
 
+    public TaskList findTasks(String keyword) {
+        return new TaskList(tasks.stream().
+                filter(task -> task.containsKeyword(keyword))
+                .toList());
+    }
+
     public List<String> serialisedList() {
         List<String> serialized = new ArrayList<>();
         for (Task task : tasks) {
@@ -67,7 +73,6 @@ public class TaskList {
         }
 
         StringBuilder builder = new StringBuilder();
-        builder.append("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.size(); i++) {
             builder.append(i + 1).append(". ").append(tasks.get(i));
             if (i < tasks.size() - 1) {

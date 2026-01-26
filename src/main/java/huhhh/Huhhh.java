@@ -10,6 +10,7 @@ import huhhh.task.Todo;
 import huhhh.ui.Ui;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 
 public class Huhhh {
 
@@ -79,12 +80,23 @@ public class Huhhh {
         case EVENT:
             handleEvent(parsedCommand.getArguments());
             return false;
+        case FIND:
+            handleFind(parsedCommand.getArguments());
+            return false;
         case BYE:
             ui.showGoodbye();
             return true;
         default:
             throw new HuhhhException("I'm sorry, but I don't know what that means :(");
         }
+    }
+
+    private void handleFind(String arguments) throws HuhhhException {
+        String keyword = arguments.trim();
+        if (keyword.isEmpty()) {
+            throw new HuhhhException("Find command requires a keyword to search for.\nUsage: find <keyword>");
+        }
+        ui.showFoundTasks(tasks.findTasks(keyword));
     }
 
     private void handleMark(String arguments) throws HuhhhException {

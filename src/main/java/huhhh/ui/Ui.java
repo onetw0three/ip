@@ -41,7 +41,7 @@ public class Ui {
     }
 
     public void showTasks(TaskList tasks) {
-        showMessage(tasks.toString());
+        showMessage("Here are the tasks in your list:\n" + tasks);
     }
 
     public void showError(String message) {
@@ -54,6 +54,10 @@ public class Ui {
 
     public void showMessage(String message) {
         System.out.println(formatMessage(message));
+    }
+
+    public void showFoundTasks(TaskList foundTasks) {
+        showMessage("Here are the matching tasks in your list:\n" + foundTasks);
     }
 
     public void showLine() {
