@@ -11,6 +11,11 @@ import huhhh.ui.Ui;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 
+/**
+ * The main application class for Huhhh task manager.
+ * It handles user interaction, command parsing, task management,
+ * and data persistence.
+ */
 public class Huhhh {
 
     private final Storage storage;
@@ -33,6 +38,11 @@ public class Huhhh {
         this.tasks = loadTasks();
     }
 
+    /**
+     * Loads tasks from storage. If loading fails, initializes an empty task list
+     *
+     * @return The loaded TaskList or an empty TaskList if loading fails.
+     */
     private TaskList loadTasks() {
         try {
             return new TaskList(storage.load());
@@ -42,6 +52,10 @@ public class Huhhh {
         }
     }
 
+    /**
+     * Starts the main interaction loop of the application. Handles user input,
+     * until BYE command is received.
+     */
     public void run() {
         ui.showWelcome();
         boolean isExit = false;
@@ -56,6 +70,12 @@ public class Huhhh {
         ui.close();
     }
 
+    /** Dispatches and executes the given command.
+     *
+     * @param parsedCommand The command to execute.
+     * @return true if the command is an exit command, false otherwise.
+     * @throws HuhhhException If an error occurs during command execution.
+     */
     private boolean execute(Parser.ParsedCommand parsedCommand) throws HuhhhException {
         switch (parsedCommand.getCommand()) {
         case LIST:
@@ -87,24 +107,52 @@ public class Huhhh {
         }
     }
 
+    /**
+     * Handles the 'mark' command to mark a task as done, updates storage,
+     * and shows confirmation.
+     *
+     * @param arguments The arguments containing the task index.
+     * @throws HuhhhException If an error occurs during marking.
+     */
     private void handleMark(String arguments) throws HuhhhException {
         Task task = tasks.mark(Parser.parseIndex(arguments));
         persistTasks();
         ui.showTaskMarked(task);
     }
 
+    /**
+     * Handles the 'unmark' command to mark a task as not done, updates storage,
+     * and shows confirmation.
+     *
+     * @param arguments The arguments containing the task index.
+     * @throws HuhhhException If an error occurs during unmarking.
+     */
     private void handleUnmark(String arguments) throws HuhhhException {
         Task task = tasks.unmark(Parser.parseIndex(arguments));
         persistTasks();
         ui.showTaskUnmarked(task);
     }
 
+    /**
+     * Handles the 'delete' command to remove a task, updates storage,
+     * and shows confirmation.
+     *
+     * @param arguments The arguments containing the task index.
+     * @throws HuhhhException If an error occurs during deletion.
+     */
     private void handleDelete(String arguments) throws HuhhhException {
         Task task = tasks.delete(Parser.parseIndex(arguments));
         persistTasks();
         ui.showTaskRemoved(task, tasks.size());
     }
 
+    /**
+     * Handles the 'todo' task command adds the Todo task, updates storage,
+     * and shows confirmation.
+     *
+     * @param arguments The arguments containing the task description.
+     * @throws HuhhhException If an error occurs during addition.
+     */
     private void handleTodo(String arguments) throws HuhhhException {
         String description = arguments.trim();
         if (description.isEmpty()) {

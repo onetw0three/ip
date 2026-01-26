@@ -1,5 +1,8 @@
 package huhhh.task;
 
+/**
+ * Represents an event task with a description, start time, and end time.
+ */
 public class Event extends Task {
 
     protected String from;
