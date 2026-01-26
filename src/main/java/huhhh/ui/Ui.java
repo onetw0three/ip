@@ -1,15 +1,15 @@
 package huhhh.ui;
 
+import java.util.Scanner;
+
 import huhhh.task.Task;
 import huhhh.task.TaskList;
-import java.util.Scanner;
 
 /**
  * Ui class handles all interactions with the user, including displaying messages
  * and reading user input.
  */
 public class Ui {
-
     private static final String DIVIDER = "    ____________________________________________________________";
 
     private final Scanner scanner;

@@ -1,14 +1,14 @@
 package huhhh.command;
 
-import huhhh.HuhhhException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+
+import huhhh.HuhhhException;
 
 /**
  * Parser class to handle parsing of user input commands and arguments.
  */
 public class Parser {
-
     /**
      * Parses the full command string into a ParsedCommand object which can be
      * used to get the command and its arguments.

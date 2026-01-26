@@ -1,15 +1,15 @@
 package huhhh.task;
 
-import huhhh.HuhhhException;
 import java.util.ArrayList;
 import java.util.List;
+
+import huhhh.HuhhhException;
 
 /**
  * Represents a list of tasks and provides methods to manipulate them.
  * Methods include add , delete, mark, unmark, and serialize tasks.
  */
 public class TaskList {
-
     private final List<Task> tasks;
 
     public TaskList() {
