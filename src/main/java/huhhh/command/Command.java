@@ -1,15 +1,7 @@
 package huhhh.command;
 
 public enum Command {
-    LIST,
-    MARK,
-    UNMARK,
-    DELETE,
-    TODO,
-    DEADLINE,
-    EVENT,
-    BYE,
-    UNKNOWN;
+    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, BYE, UNKNOWN;
 
     public static Command fromString(String input) {
         if (input == null || input.trim().isEmpty()) {

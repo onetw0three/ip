@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Deadline extends Task {
-
     private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy");
     private static final DateTimeFormatter STORAGE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 

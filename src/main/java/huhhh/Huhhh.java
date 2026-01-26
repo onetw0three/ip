@@ -1,5 +1,8 @@
 package huhhh;
 
+import java.nio.file.Paths;
+import java.time.LocalDate;
+
 import huhhh.command.Parser;
 import huhhh.storage.Storage;
 import huhhh.task.Deadline;
@@ -8,11 +11,8 @@ import huhhh.task.Task;
 import huhhh.task.TaskList;
 import huhhh.task.Todo;
 import huhhh.ui.Ui;
-import java.nio.file.Paths;
-import java.time.LocalDate;
 
 public class Huhhh {
-
     private final Storage storage;
     private final TaskList tasks;
     private final Ui ui;

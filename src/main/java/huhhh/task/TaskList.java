@@ -1,11 +1,11 @@
 package huhhh.task;
 
-import huhhh.HuhhhException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskList {
+import huhhh.HuhhhException;
 
+public class TaskList {
     private final List<Task> tasks;
 
     public TaskList() {

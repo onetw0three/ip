@@ -1,11 +1,11 @@
 package huhhh.command;
 
-import huhhh.HuhhhException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-public class Parser {
+import huhhh.HuhhhException;
 
+public class Parser {
     public static ParsedCommand parse(String fullCommand) throws HuhhhException {
         if (fullCommand == null) {
             throw new HuhhhException("Command cannot be null.");
