@@ -26,6 +26,12 @@ public class Huhhh {
         this(new Storage());
     }
 
+    /**
+     * Constructs a Huhhh application with the specified file path for storage.
+     * If the file path is null or blank, uses the default storage location.
+     *
+     * @param filePath The file path for storing tasks.
+     */
     public Huhhh(String filePath) {
         this(filePath == null || filePath.isBlank()
                 ? new Storage()
@@ -70,7 +76,8 @@ public class Huhhh {
         ui.close();
     }
 
-    /** Dispatches and executes the given command.
+    /**
+     * Dispatches and executes the given command.
      *
      * @param parsedCommand The command to execute.
      * @return true if the command is an exit command, false otherwise.
@@ -182,15 +189,18 @@ public class Huhhh {
     private void handleDeadline(String arguments) throws HuhhhException {
         int byIndex = arguments.indexOf("/by");
         if (byIndex == -1) {
-            throw new HuhhhException("Deadline task must have a /by clause.\nUsage: deadline <desc> /by <date>");
+            throw new HuhhhException("Deadline task must have a /by clause.\n"
+                    + "Usage: deadline <desc> /by <date>");
         }
         String desc = arguments.substring(0, byIndex).trim();
         if (desc.isEmpty()) {
-            throw new HuhhhException("Deadline task must have a description.\nUsage: deadline <desc> /by <date>");
+            throw new HuhhhException("Deadline task must have a description.\n"
+                    + "Usage: deadline <desc> /by <date>");
         }
         String by = arguments.substring(byIndex + 3).trim();
         if (by.isEmpty()) {
-            throw new HuhhhException("Deadline task must have a specified /by date.\nUsage: deadline <desc> /by <date>");
+            throw new HuhhhException("Deadline task must have a specified /by date.\n"
+                    + "Usage: deadline <desc> /by <date>");
         }
         LocalDate dueDate = Parser.parseDate(by);
         addTask(new Deadline(desc, dueDate));

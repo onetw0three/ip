@@ -8,3 +8,6 @@
 ### A-JavaDoc
 - Model suggested clear and concise comments for all the classes
 - But I made minor adjustments to ensure accuracy.
+
+## A-CheckStyle
+- Used code-completion for missing Javadoc comments

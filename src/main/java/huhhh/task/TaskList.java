@@ -78,7 +78,7 @@ public class TaskList {
     }
 
     /**
-     .      * Checks if the task list is empty.
+     * Checks if the task list is empty.
      *
      * @return true if the task list is empty, false otherwise.
      */
@@ -108,8 +108,8 @@ public class TaskList {
      * @return
      */
     public TaskList findTasks(String keyword) {
-        return new TaskList(tasks.stream().
-                filter(task -> task.containsKeyword(keyword))
+        return new TaskList(tasks.stream()
+                .filter(task -> task.containsKeyword(keyword))
                 .toList());
     }
 
@@ -126,6 +126,7 @@ public class TaskList {
         return serialized;
     }
 
+    @Override
     public String toString() {
         if (tasks.isEmpty()) {
             return "You have no tasks in your list.";

@@ -1,16 +1,21 @@
 package huhhh.storage;
 
-import huhhh.HuhhhException;
-import huhhh.task.Deadline;
-import huhhh.task.Task;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import huhhh.HuhhhException;
+import huhhh.task.Deadline;
+import huhhh.task.Task;
 
 public class StorageTest {
     private static Path createTempFileWithContent(String content) throws Exception {
@@ -23,7 +28,7 @@ public class StorageTest {
     void load_emptyFile_returnsEmptyList() throws Exception {
         Storage storage = new Storage(createTempFileWithContent("\n\n   \n"));
         List<Task> loaded = storage.load();
-        assertTrue(loaded.isEmpty());
+        Assertions.assertTrue(loaded.isEmpty());
     }
 
     @Test
