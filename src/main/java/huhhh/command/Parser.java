@@ -49,7 +49,8 @@ public class Parser {
         }
     }
 
-    /** Parses a date string in the format yyyy-mm-dd.
+    /**
+     * Parses a date string in the format yyyy-mm-dd.
      *
      * @param rawDate The raw date string from user input.
      * @return The parsed LocalDate object.
@@ -70,6 +71,12 @@ public class Parser {
         private final Command command;
         private final String arguments;
 
+        /**
+         * Constructs a ParsedCommand with the given command and arguments.
+         *
+         * @param command   The parsed command.
+         * @param arguments The arguments associated with the command.
+         */
         public ParsedCommand(Command command, String arguments) {
             this.command = command;
             this.arguments = arguments;

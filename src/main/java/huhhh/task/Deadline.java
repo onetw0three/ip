@@ -12,6 +12,12 @@ public class Deadline extends Task {
 
     protected LocalDate by;
 
+    /**
+     * Constructs a Deadline with the given description and due date.
+     *
+     * @param description The description of the deadline.
+     * @param by          The due date of the deadline.
+     */
     public Deadline(String description, LocalDate by) {
         super(description);
         this.by = by;
