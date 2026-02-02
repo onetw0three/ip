@@ -14,18 +14,10 @@
          xmlns="http://javafx.com/javafx/17"
          xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Label fx:id="dialog"
-               text="Label"
-               wrapText="true"
-               minHeight="-Infinity"
-               textFill="#e6e6e6">
+        <Label fx:id="dialog" text="Label" wrapText="true" minHeight="-Infinity">
             <padding>
                 <Insets top="8.0" right="10.0" bottom="8.0" left="10.0" />
             </padding>
-            <style>
-                -fx-background-color: #2b2b2e;
-                -fx-background-radius: 12;
-            </style>
         </Label>
         <ImageView fx:id="displayPicture" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
     </children>

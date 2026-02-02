@@ -2,6 +2,7 @@ package huhhh.ui;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,6 +35,10 @@ public class DialogBox extends HBox {
             Logger.showError(e.getMessage());
         }
 
+        // Ensure styles are applied even when this DialogBox is created programmatically.
+        this.getStylesheets().add(Objects.requireNonNull(
+                MainWindow.class.getResource("/css/dialog-box.css")).toExternalForm());
+
         dialog.setText(text);
         displayPicture.setImage(img);
     }
@@ -46,6 +51,9 @@ public class DialogBox extends HBox {
         Collections.reverse(tmp);
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);
+
+        // Adjust bubble corner styling for the flipped (reply) dialog.
+        dialog.getStyleClass().add("reply-label");
     }
 
     /**

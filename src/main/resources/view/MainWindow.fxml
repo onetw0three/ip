@@ -6,11 +6,13 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="600.0" prefWidth="400.0"
-            style="-fx-background-color: #0f0f10;"
-            xmlns="http://javafx.com/javafx/17"
+<AnchorPane maxHeight="-Infinity"
+            maxWidth="-Infinity"
+            minHeight="-Infinity"
+            minWidth="-Infinity"
+            prefHeight="600.0"
+            prefWidth="400.0"
+            xmlns="http://javafx.com/javafx/20.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="huhhh.ui.MainWindow">
     <children>
@@ -19,29 +21,32 @@
                    onAction="#handleUserInput"
                    prefHeight="41.0"
                    prefWidth="324.0"
-                   style="-fx-background-color: #1a1a1c; -fx-text-fill: #e6e6e6; -fx-prompt-text-fill: #9aa0a6; -fx-highlight-fill: #3a3f44; -fx-highlight-text-fill: #ffffff; -fx-caret-color: #e6e6e6; -fx-background-radius: 0; -fx-border-radius: 0; -fx-border-color: #2a2a2d;"
-                   AnchorPane.bottomAnchor="1.0" />
+                   AnchorPane.bottomAnchor="1.0"
+                   AnchorPane.leftAnchor="0.0"
+                   AnchorPane.rightAnchor="76.0" />
         <Button fx:id="sendButton"
                 layoutX="324.0"
                 layoutY="558.0"
                 mnemonicParsing="false"
                 onAction="#handleUserInput"
                 prefHeight="41.0"
-                prefWidth="76.0"
-                text="Send"
-                style="-fx-background-color: #2a2a2d; -fx-text-fill: #f0f0f0; -fx-background-radius: 0; -fx-border-radius: 0; -fx-border-color: #3a3a3f;" />
+                prefWidth="76.0" text="Send"
+                AnchorPane.bottomAnchor="1.0"
+                AnchorPane.rightAnchor="0.0" />
         <ScrollPane fx:id="scrollPane"
+                    fitToWidth="true"
                     hbarPolicy="NEVER"
-                    hvalue="1.0"
-                    prefHeight="557.0"
+                    hvalue="1.0" prefHeight="557.0"
                     prefWidth="400.0"
                     vvalue="1.0"
-                    style="-fx-background: #0f0f10; -fx-background-color: #0f0f10;">
+                    AnchorPane.bottomAnchor="43.0"
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="0.0">
             <content>
                 <VBox fx:id="dialogContainer"
                       prefHeight="552.0"
-                      prefWidth="388.0"
-                      style="-fx-background-color: #0f0f10;" />
+                      prefWidth="388.0" />
             </content>
         </ScrollPane>
     </children>
