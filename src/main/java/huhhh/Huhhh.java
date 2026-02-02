@@ -22,6 +22,8 @@ public class Huhhh {
     private final TaskList tasks;
     private final Ui ui;
 
+    private boolean isExit = false;
+
     public Huhhh() {
         this(new Storage());
     }
@@ -45,6 +47,36 @@ public class Huhhh {
     }
 
     /**
+     * Processes a single line of user input and returns the text response.
+     *
+     * This is the main entry-point used by the JavaFX GUI.
+     *
+     * @param input User input.
+     * @return Response text to display.
+     */
+    public String getResponse(String input) {
+        if (isExit) {
+            return "Bye. Hope to see you again soon!";
+        }
+
+        try {
+            Parser.ParsedCommand parsedCommand = Parser.parse(input);
+            return executeForResponse(parsedCommand);
+        } catch (HuhhhException e) {
+            return e.getMessage();
+        }
+    }
+
+    /**
+     * Returns true if the app has received a BYE command and should exit.
+     *
+     * This is primarily used by the JavaFX GUI to decide when to close the window.
+     */
+    public boolean isExit() {
+        return isExit;
+    }
+
+    /**
      * Loads tasks from storage. If loading fails, initializes an empty task list
      *
      * @return The loaded TaskList or an empty TaskList if loading fails.
@@ -64,7 +96,6 @@ public class Huhhh {
      */
     public void run() {
         ui.showWelcome();
-        boolean isExit = false;
         while (!isExit) {
             try {
                 Parser.ParsedCommand parsedCommand = Parser.parse(ui.readCommand());
@@ -77,7 +108,7 @@ public class Huhhh {
     }
 
     /**
-     * Dispatches and executes the given command.
+     * Dispatches and executes the given command (CLI path: prints via Ui).
      *
      * @param parsedCommand The command to execute.
      * @return true if the command is an exit command, false otherwise.
@@ -115,6 +146,123 @@ public class Huhhh {
         default:
             throw new HuhhhException("I'm sorry, but I don't know what that means :(");
         }
+    }
+
+    /**
+     * Dispatches and executes the given command (GUI path: returns strings).
+     *
+     * @param parsedCommand The command to execute.
+     * @return The response string to be displayed.
+     * @throws HuhhhException If an error occurs during command execution.
+     */
+    private String executeForResponse(Parser.ParsedCommand parsedCommand) throws HuhhhException {
+        switch (parsedCommand.getCommand()) {
+        case LIST:
+            return "Here are the tasks in your list:\n" + tasks;
+        case MARK: {
+            Task task = tasks.mark(Parser.parseIndex(parsedCommand.getArguments()));
+            persistTasks();
+            return "Nice! I've marked this task as done:\n  " + task;
+        }
+        case UNMARK: {
+            Task task = tasks.unmark(Parser.parseIndex(parsedCommand.getArguments()));
+            persistTasks();
+            return "OK, I've marked this task as not done yet:\n  " + task;
+        }
+        case DELETE: {
+            Task task = tasks.delete(Parser.parseIndex(parsedCommand.getArguments()));
+            persistTasks();
+            return "Noted. I've removed this task:\n " + task
+                    + "\nNow you have " + tasks.size() + " tasks in the list.";
+        }
+        case TODO: {
+            Task task = createTodo(parsedCommand.getArguments());
+            addTask(task);
+            return "Got it. I've added this task:\n  " + task
+                    + "\nNow you have " + tasks.size() + " tasks in the list.";
+        }
+        case DEADLINE: {
+            Task task = createDeadline(parsedCommand.getArguments());
+            addTask(task);
+            return "Got it. I've added this task:\n  " + task
+                    + "\nNow you have " + tasks.size() + " tasks in the list.";
+        }
+        case EVENT: {
+            Task task = createEvent(parsedCommand.getArguments());
+            addTask(task);
+            return "Got it. I've added this task:\n  " + task
+                    + "\nNow you have " + tasks.size() + " tasks in the list.";
+        }
+        case FIND: {
+            String keyword = parsedCommand.getArguments().trim();
+            if (keyword.isEmpty()) {
+                throw new HuhhhException("Find command requires a keyword to search for.\nUsage: find <keyword>");
+            }
+            return "Here are the matching tasks in your list:\n" + tasks.findTasks(keyword);
+        }
+        case BYE:
+            isExit = true;
+            return "Bye. Hope to see you again soon!";
+        default:
+            throw new HuhhhException("I'm sorry, but I don't know what that means :(");
+        }
+    }
+
+    private Task createTodo(String arguments) throws HuhhhException {
+        String description = arguments.trim();
+        if (description.isEmpty()) {
+            throw new HuhhhException("Todo task must have a description.\nUsage: todo <desc>");
+        }
+        return new Todo(description);
+    }
+
+    private Task createDeadline(String arguments) throws HuhhhException {
+        int byIndex = arguments.indexOf("/by");
+        if (byIndex == -1) {
+            throw new HuhhhException("Deadline task must have a /by clause.\n"
+                    + "Usage: deadline <desc> /by <date>");
+        }
+        String desc = arguments.substring(0, byIndex).trim();
+        if (desc.isEmpty()) {
+            throw new HuhhhException("Deadline task must have a description.\n"
+                    + "Usage: deadline <desc> /by <date>");
+        }
+        String by = arguments.substring(byIndex + 3).trim();
+        if (by.isEmpty()) {
+            throw new HuhhhException("Deadline task must have a specified /by date.\n"
+                    + "Usage: deadline <desc> /by <date>");
+        }
+        LocalDate dueDate = Parser.parseDate(by);
+        return new Deadline(desc, dueDate);
+    }
+
+    private Task createEvent(String arguments) throws HuhhhException {
+        int fromIndex = arguments.indexOf("/from");
+        int toIndex = arguments.indexOf("/to");
+        if (fromIndex == -1 || toIndex == -1) {
+            throw new HuhhhException(
+                    "Event task must have /from and /to clauses.\nUsage: event <desc> /from <date> /to <date>");
+        }
+        if (fromIndex >= toIndex) {
+            throw new HuhhhException(
+                    "/from clause must come before /to clause.\nUsage: event <desc> /from <date> /to <date>");
+        }
+        String desc = arguments.substring(0, fromIndex).trim();
+        if (desc.isEmpty()) {
+            throw new HuhhhException(
+                    "Event task must have a description.\nUsage: event <desc> /from <date> /to <date>");
+        }
+        String from = arguments.substring(fromIndex + 5, toIndex).trim();
+        if (from.isEmpty()) {
+            throw new HuhhhException(
+                    "Event task must have a specified /from date.\nUsage: event <desc> /from <date> /to <date>");
+        }
+        String to = arguments.substring(toIndex + 3).trim();
+        if (to.isEmpty()) {
+            throw new HuhhhException(
+                    "Event task must have a specified /to date.\nUsage: event <desc> /from <date> /to <date>");
+        }
+        return new Event(desc, from, to);
     }
 
     /**
@@ -179,68 +327,48 @@ public class Huhhh {
      * @throws HuhhhException If an error occurs during addition.
      */
     private void handleTodo(String arguments) throws HuhhhException {
-        String description = arguments.trim();
-        if (description.isEmpty()) {
-            throw new HuhhhException("Todo task must have a description.\nUsage: todo <desc>");
-        }
-        addTask(new Todo(description));
+        addTask(createTodo(arguments));
     }
 
+    /**
+     * Handles the 'deadline' task command adds the Deadline task, updates storage,
+     * and shows confirmation.
+     *
+     * @param arguments The arguments containing the task description and due date.
+     * @throws HuhhhException If an error occurs during addition.
+     */
     private void handleDeadline(String arguments) throws HuhhhException {
-        int byIndex = arguments.indexOf("/by");
-        if (byIndex == -1) {
-            throw new HuhhhException("Deadline task must have a /by clause.\n"
-                    + "Usage: deadline <desc> /by <date>");
-        }
-        String desc = arguments.substring(0, byIndex).trim();
-        if (desc.isEmpty()) {
-            throw new HuhhhException("Deadline task must have a description.\n"
-                    + "Usage: deadline <desc> /by <date>");
-        }
-        String by = arguments.substring(byIndex + 3).trim();
-        if (by.isEmpty()) {
-            throw new HuhhhException("Deadline task must have a specified /by date.\n"
-                    + "Usage: deadline <desc> /by <date>");
-        }
-        LocalDate dueDate = Parser.parseDate(by);
-        addTask(new Deadline(desc, dueDate));
+        addTask(createDeadline(arguments));
     }
 
+    /**
+     * Handles the 'event' task command adds the Event task, updates storage,
+     * and shows confirmation.
+     *
+     * @param arguments The arguments containing the task description and event dates.
+     * @throws HuhhhException If an error occurs during addition.
+     */
     private void handleEvent(String arguments) throws HuhhhException {
-        int fromIndex = arguments.indexOf("/from");
-        int toIndex = arguments.indexOf("/to");
-        if (fromIndex == -1 || toIndex == -1) {
-            throw new HuhhhException(
-                    "Event task must have /from and /to clauses.\nUsage: event <desc> /from <date> /to <date>");
-        }
-        if (fromIndex >= toIndex) {
-            throw new HuhhhException(
-                    "/from clause must come before /to clause.\nUsage: event <desc> /from <date> /to <date>");
-        }
-        String desc = arguments.substring(0, fromIndex).trim();
-        if (desc.isEmpty()) {
-            throw new HuhhhException(
-                    "Event task must have a description.\nUsage: event <desc> /from <date> /to <date>");
-        }
-        String from = arguments.substring(fromIndex + 5, toIndex).trim();
-        if (from.isEmpty()) {
-            throw new HuhhhException(
-                    "Event task must have a specified /from date.\nUsage: event <desc> /from <date> /to <date>");
-        }
-        String to = arguments.substring(toIndex + 3).trim();
-        if (to.isEmpty()) {
-            throw new HuhhhException(
-                    "Event task must have a specified /to date.\nUsage: event <desc> /from <date> /to <date>");
-        }
-        addTask(new Event(desc, from, to));
+        addTask(createEvent(arguments));
     }
 
+    /**
+     * Adds a task to the task list, updates storage, and shows confirmation.
+     *
+     * @param task The task to add.
+     * @throws HuhhhException If an error occurs during addition.
+     */
     private void addTask(Task task) throws HuhhhException {
         tasks.add(task);
         persistTasks();
         ui.showTaskAdded(task, tasks.size());
     }
 
+    /**
+     * Persists the current task list to storage.
+     *
+     * @throws HuhhhException If an error occurs during saving.
+     */
     private void persistTasks() throws HuhhhException {
         storage.save(tasks);
     }
