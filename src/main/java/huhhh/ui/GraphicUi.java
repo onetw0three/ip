@@ -1,11 +1,14 @@
 package huhhh.ui;
 
+import java.io.IOException;
 import java.util.Objects;
 
+import com.sun.tools.javac.Main;
 import huhhh.Huhhh;
 import huhhh.HuhhhException;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -20,88 +23,20 @@ import javafx.stage.Stage;
  * The GUI layer for the Huhhh JavaFX application.
  */
 public class GraphicUi extends Application {
-    private ScrollPane scrollPane;
-    private VBox dialogContainer;
-    private TextField userInput;
-    private Button sendButton;
-
-
-    private final Image userImage = new Image(
-            Objects.requireNonNull(this.getClass().getResourceAsStream("/images/DaUser.png")));
-    private final Image dukeImage = new Image(
-            Objects.requireNonNull(this.getClass().getResourceAsStream("/images/DaHuhhh.png")));
     private final Huhhh huhhh = new Huhhh();
 
     @Override
     public void start(Stage stage) throws HuhhhException {
-        scrollPane = new ScrollPane();
-        dialogContainer = new VBox();
-        scrollPane.setContent(dialogContainer);
-
-        userInput = new TextField();
-        sendButton = new Button("Send");
-
-        AnchorPane mainLayout = new AnchorPane();
-        mainLayout.getChildren().addAll(scrollPane, userInput, sendButton);
-
-        Scene scene = new Scene(mainLayout);
-
-        stage.setScene(scene);
-        stage.show();
-
-        stage.setTitle("Huhhh");
-        stage.setResizable(false);
-        stage.setMinHeight(600.0);
-        stage.setMinWidth(400.0);
-
-        mainLayout.setPrefSize(400.0, 600.0);
-
-        scrollPane.setPrefSize(385, 535);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        scrollPane.setVvalue(1.0);
-        scrollPane.setFitToWidth(true);
-
-        dialogContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
-
-        userInput.setPrefWidth(325.0);
-
-        sendButton.setPrefWidth(55.0);
-
-        AnchorPane.setTopAnchor(scrollPane, 1.0);
-
-        AnchorPane.setBottomAnchor(sendButton, 1.0);
-        AnchorPane.setRightAnchor(sendButton, 1.0);
-
-        AnchorPane.setLeftAnchor(userInput, 1.0);
-        AnchorPane.setBottomAnchor(userInput, 1.0);
-
-        sendButton.setOnMouseClicked((event) -> {
-            handleUserInput();
-        });
-
-        userInput.setOnAction((event) -> {
-            handleUserInput();
-        });
-
-        dialogContainer.heightProperty().addListener((observable -> {
-            scrollPane.setVvalue(1.0);
-        }));
-    }
-
-    private void handleUserInput() {
-        String userText = userInput.getText();
-        String dukeText = huhhh.getResponse(userInput.getText());
-        dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(userText, userImage),
-                DialogBox.getDukeDialog(dukeText, dukeImage)
-        );
-        userInput.clear();
-
-        if (huhhh.isExit()) {
-            userInput.setDisable(true);
-            sendButton.setDisable(true);
-            Platform.exit();
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Huhhh.class.getResource("/view/MainWindow.fxml"));
+            AnchorPane ap = fxmlLoader.load();
+            Scene scene = new Scene(ap);
+            stage.setTitle("Huhhh");
+            stage.setScene(scene);
+            fxmlLoader.<MainWindow>getController().setHuhhh(huhhh);  // inject the Duke instance
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
