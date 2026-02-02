@@ -78,7 +78,7 @@ public class StorageTest {
         Storage storage = new Storage(createTempFileWithContent("D | 1 | submit report | 2024-12-31\n"));
         List<Task> loaded = storage.load();
         assertEquals(1, loaded.size());
-        Task task = loaded.getFirst();
+        Task task = loaded.get(0);
         assertInstanceOf(Deadline.class, task);
         huhhh.task.Deadline deadline = (huhhh.task.Deadline) task;
         assertEquals("[D][X] submit report (by: Dec 31 2024)", deadline.toString());

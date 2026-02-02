@@ -1,0 +1,24 @@
+.label {
+    -fx-text-fill: #e6e6e6;
+    -fx-background-color: #2b2b2e;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+}
+
+/* Applied to the label for the reply (left side) to adjust the speech-bubble corner. */
+.reply-label {
+    -fx-background-radius: 12 12 12 0;
+    -fx-border-radius: 12 12 12 0;
+}
+
+#displayPicture {
+    /* Shadow effect on image. */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 10, 0.5, 5, 5);
+
+    /* Change size of image. */
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+
+    /* Rotate image clockwise by degrees. */
+    -fx-rotate: 0;
+}
