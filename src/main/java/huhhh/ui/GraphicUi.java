@@ -1,22 +1,12 @@
 package huhhh.ui;
 
 import java.io.IOException;
-import java.util.Objects;
 
-import com.sun.tools.javac.Main;
 import huhhh.Huhhh;
-import huhhh.HuhhhException;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -26,17 +16,17 @@ public class GraphicUi extends Application {
     private final Huhhh huhhh = new Huhhh();
 
     @Override
-    public void start(Stage stage) throws HuhhhException {
+    public void start(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Huhhh.class.getResource("/view/MainWindow.fxml"));
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setTitle("Huhhh");
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setHuhhh(huhhh);  // inject the Duke instance
+            fxmlLoader.<MainWindow>getController().setHuhhh(huhhh);
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.showError(e.getMessage());
         }
     }
 }
