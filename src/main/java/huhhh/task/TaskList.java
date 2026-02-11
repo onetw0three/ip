@@ -2,6 +2,8 @@ package huhhh.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import huhhh.HuhhhException;
 
@@ -119,11 +121,9 @@ public class TaskList {
      * @return A list of serialized task strings.
      */
     public List<String> serialisedList() {
-        List<String> serialized = new ArrayList<>();
-        for (Task task : tasks) {
-            serialized.add(task.serialisedString());
-        }
-        return serialized;
+        return tasks.stream()
+                .map(Task::serialisedString)
+                .toList();
     }
 
     @Override
@@ -132,13 +132,8 @@ public class TaskList {
             return "You have no tasks in your list.";
         }
 
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < tasks.size(); i++) {
-            builder.append(i + 1).append(". ").append(tasks.get(i));
-            if (i < tasks.size() - 1) {
-                builder.append('\n');
-            }
-        }
-        return builder.toString();
+        return IntStream.range(0, tasks.size())
+                .mapToObj(i -> (i + 1) + ". " + tasks.get(i))
+                .collect(Collectors.joining("\n"));
     }
 }
