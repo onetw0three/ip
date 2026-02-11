@@ -15,7 +15,12 @@ public class Todo extends Task {
 
     @Override
     public String serialisedString() {
-        return String.format("T | %d | %s",
-                super.isDone() ? 1 : 0, super.getDescription());
+        String tagsField = serialisedTagsField();
+        if (tagsField.isEmpty()) {
+            return String.format("T | %d | %s",
+                    super.isDone() ? 1 : 0, super.getDescription());
+        }
+        return String.format("T | %d | %s | %s",
+                super.isDone() ? 1 : 0, super.getDescription(), tagsField);
     }
 }

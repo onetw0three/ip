@@ -15,4 +15,7 @@ _# AI Usage Records
 
 ## Level-10
 - Used to style the GUI components in FXML files
-- Used Gemini Nano Banana for generate avatar images for user profiles
+- Used Gemini Nano Banana for generate avatar images for user profile
+
+## BCD-Extension
+- Implemented the necessary C-Tagging methods without any issues

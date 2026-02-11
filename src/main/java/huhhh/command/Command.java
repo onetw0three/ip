@@ -4,7 +4,7 @@ package huhhh.command;
  * Enum representing the various commands supported by the Huhhh application.
  */
 public enum Command {
-    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, FIND, BYE, UNKNOWN;
+    LIST, MARK, UNMARK, DELETE, TODO, DEADLINE, EVENT, FIND, TAG, UNTAG, BYE, UNKNOWN;
 
     /**
      * Converts a string input to its corresponding Command enum value.

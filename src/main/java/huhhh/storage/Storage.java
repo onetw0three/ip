@@ -108,9 +108,14 @@ public class Storage {
         boolean isDone = parseDone(parts[1], line);
         String description = parts[2];
         Task task;
+        String tagsField = "";
+
         switch (type) {
         case "T":
             task = new Todo(description);
+            if (parts.length >= 4) {
+                tagsField = parts[3];
+            }
             break;
         case "D":
             if (parts.length < 4) {
@@ -123,15 +128,25 @@ public class Storage {
                 throw new HuhhhException("Corrupted deadline date: " + line);
             }
             task = new Deadline(description, dueDate);
+            if (parts.length >= 5) {
+                tagsField = parts[4];
+            }
             break;
         case "E":
             if (parts.length < 5) {
                 throw new HuhhhException("Corrupted event entry: " + line);
             }
             task = new Event(description, parts[3], parts[4]);
+            if (parts.length >= 6) {
+                tagsField = parts[5];
+            }
             break;
         default:
             throw new HuhhhException("Unknown task type in save: " + type);
+        }
+
+        if (!tagsField.isBlank()) {
+            task.loadTagsFromStorageField(tagsField);
         }
 
         if (isDone) {

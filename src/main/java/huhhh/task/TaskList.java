@@ -71,6 +71,53 @@ public class TaskList {
     }
 
     /**
+     * Adds the given tag(s) to a task.
+     *
+     * @param index Task index (0-based)
+     * @param rawTags Tag tokens like "#fun"
+     * @return The updated task.
+     * @throws HuhhhException if index is out of bounds or a tag is invalid.
+     */
+    public Task tag(int index, List<String> rawTags) throws HuhhhException {
+        Task task = getTask(index);
+        if (rawTags == null || rawTags.isEmpty()) {
+            throw new HuhhhException("Tag command requires at least one tag.\nUsage: tag <index> #tag [#tag...] ");
+        }
+        try {
+            for (String t : rawTags) {
+                task.addTag(t);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new HuhhhException(e.getMessage());
+        }
+        return task;
+    }
+
+    /**
+     * Removes the given tag(s) from a task.
+     *
+     * @param index Task index (0-based)
+     * @param rawTags Tag tokens like "#fun"
+     * @return The updated task.
+     * @throws HuhhhException if index is out of bounds or a tag is invalid.
+     */
+    public Task untag(int index, List<String> rawTags) throws HuhhhException {
+        Task task = getTask(index);
+        if (rawTags == null || rawTags.isEmpty()) {
+            throw new HuhhhException(
+                    "Untag command requires at least one tag.\nUsage: untag <index> #tag [#tag...] ");
+        }
+        try {
+            for (String t : rawTags) {
+                task.removeTag(t);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new HuhhhException(e.getMessage());
+        }
+        return task;
+    }
+
+    /**
      * Returns the number of tasks in the task list.
      *
      * @return The size of the task list.
@@ -104,14 +151,26 @@ public class TaskList {
 
     /**
      * Retrieves all the tasks that have a matching keyword in
-     * its description
+     * its description.
      *
      * @param keyword String to match in the description
-     * @return
+     * @return A TaskList containing matching tasks.
      */
     public TaskList findTasks(String keyword) {
         return new TaskList(tasks.stream()
                 .filter(task -> task.containsKeyword(keyword))
+                .toList());
+    }
+
+    /**
+     * Retrieves all the tasks that have the given tag.
+     *
+     * @param rawTag Tag token like "#fun" (leading '#' optional)
+     * @return A TaskList containing matching tasks.
+     */
+    public TaskList findTasksByTag(String rawTag) {
+        return new TaskList(tasks.stream()
+                .filter(task -> task.hasTag(rawTag))
                 .toList());
     }
 

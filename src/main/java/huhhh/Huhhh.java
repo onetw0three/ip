@@ -136,7 +136,22 @@ public class Huhhh {
             if (keyword.isEmpty()) {
                 throw new HuhhhException("Find command requires a keyword to search for.\nUsage: find <keyword>");
             }
+            if (keyword.startsWith("#")) {
+                return "Here are the matching tasks with the tags:\n" + tasks.findTasksByTag(keyword);
+            }
             return "Here are the matching tasks in your list:\n" + tasks.findTasks(keyword);
+        }
+        case TAG: {
+            Parser.ParsedIndexAndTags parsed = Parser.parseIndexAndTags(parsedCommand.getArguments());
+            Task task = tasks.tag(parsed.getIndex(), parsed.getTags());
+            persistTasks();
+            return "Noted. I've tagged this task:\n  " + task;
+        }
+        case UNTAG: {
+            Parser.ParsedIndexAndTags parsed = Parser.parseIndexAndTags(parsedCommand.getArguments());
+            Task task = tasks.untag(parsed.getIndex(), parsed.getTags());
+            persistTasks();
+            return "Noted. I've removed tag(s) from this task:\n  " + task;
         }
         case BYE:
             isExit = true;
@@ -147,12 +162,17 @@ public class Huhhh {
     }
 
     private Task createTodo(String arguments) throws HuhhhException {
-        String description = arguments.trim();
+        Task.ParsedTextWithTags parsed = Task.parseDescriptionAndTags(arguments);
+        String description = parsed.getText().trim();
         if (description.isEmpty()) {
             throw new HuhhhException("Todo task must have a description.\nUsage: todo <desc>");
         }
         assert !description.isBlank() : "Todo description should be non-blank after validation";
-        return new Todo(description);
+        Task task = new Todo(description);
+        for (String t : parsed.getTags()) {
+            task.addTag(t);
+        }
+        return task;
     }
 
     private Task createDeadline(String arguments) throws HuhhhException {
@@ -161,7 +181,10 @@ public class Huhhh {
             throw new HuhhhException("Deadline task must have a /by clause.\n"
                     + "Usage: deadline <desc> /by <date>");
         }
-        String desc = arguments.substring(0, byIndex).trim();
+
+        String descRaw = arguments.substring(0, byIndex).trim();
+        Task.ParsedTextWithTags parsed = Task.parseDescriptionAndTags(descRaw);
+        String desc = parsed.getText().trim();
         if (desc.isEmpty()) {
             throw new HuhhhException("Deadline task must have a description.\n"
                     + "Usage: deadline <desc> /by <date>");
@@ -172,7 +195,11 @@ public class Huhhh {
                     + "Usage: deadline <desc> /by <date>");
         }
         LocalDate dueDate = Parser.parseDate(by);
-        return new Deadline(desc, dueDate);
+        Task task = new Deadline(desc, dueDate);
+        for (String t : parsed.getTags()) {
+            task.addTag(t);
+        }
+        return task;
     }
 
     private Task createEvent(String arguments) throws HuhhhException {
@@ -186,11 +213,15 @@ public class Huhhh {
             throw new HuhhhException(
                     "/from clause must come before /to clause.\nUsage: event <desc> /from <date> /to <date>");
         }
-        String desc = arguments.substring(0, fromIndex).trim();
+
+        String descRaw = arguments.substring(0, fromIndex).trim();
+        Task.ParsedTextWithTags parsed = Task.parseDescriptionAndTags(descRaw);
+        String desc = parsed.getText().trim();
         if (desc.isEmpty()) {
             throw new HuhhhException(
                     "Event task must have a description.\nUsage: event <desc> /from <date> /to <date>");
         }
+
         String from = arguments.substring(fromIndex + 5, toIndex).trim();
         if (from.isEmpty()) {
             throw new HuhhhException(
@@ -202,7 +233,12 @@ public class Huhhh {
                     "Event task must have a specified /to date.\nUsage: event <desc> /from <date> /to <date>");
         }
         assert !from.isBlank() && !to.isBlank() : "Event from/to should be non-blank after validation";
-        return new Event(desc, from, to);
+        Task task = new Event(desc, from, to);
+
+        for (String t : parsed.getTags()) {
+            task.addTag(t);
+        }
+        return task;
     }
 
     /**
