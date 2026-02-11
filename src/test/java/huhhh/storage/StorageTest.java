@@ -83,4 +83,12 @@ public class StorageTest {
         huhhh.task.Deadline deadline = (huhhh.task.Deadline) task;
         assertEquals("[D][X] submit report (by: Dec 31 2024)", deadline.toString());
     }
+
+    @Test
+    void load_todoWithTags_loadsTags() throws Exception {
+        Storage storage = new Storage(createTempFileWithContent("T | 0 | read book | fun,School\n"));
+        List<Task> loaded = storage.load();
+        assertEquals(1, loaded.size());
+        assertEquals("[T][ ] read book [#fun #school]", loaded.get(0).toString());
+    }
 }

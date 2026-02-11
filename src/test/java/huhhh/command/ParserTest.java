@@ -95,4 +95,19 @@ public class ParserTest {
         HuhhhException ex = assertThrows(HuhhhException.class, () -> Parser.parseDate("25-01-2026"));
         assertEquals("Dates must follow the yyyy-mm-dd format (e.g., 2019-10-15).", ex.getMessage());
     }
+
+    @Test
+    void parseIndexAndTags_valid_parsesIndexAndTags() throws Exception {
+        Parser.ParsedIndexAndTags parsed = Parser.parseIndexAndTags("2 #fun #CS2103T");
+        assertEquals(1, parsed.getIndex());
+        assertEquals(2, parsed.getTags().size());
+        assertEquals("#fun", parsed.getTags().get(0));
+        assertEquals("#CS2103T", parsed.getTags().get(1));
+    }
+
+    @Test
+    void parseIndexAndTags_invalidTag_throws() {
+        HuhhhException ex = assertThrows(HuhhhException.class, () -> Parser.parseIndexAndTags("2 fun"));
+        assertEquals("Tags must start with '#'. Invalid tag: fun", ex.getMessage());
+    }
 }
