@@ -2,6 +2,9 @@ package huhhh.command;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import huhhh.HuhhhException;
 
@@ -70,6 +73,34 @@ public class Parser {
     }
 
     /**
+     * Parses arguments in the form: "index #tag [#tag...]".
+     *
+     * @param rawArguments The raw argument string.
+     * @return A pair of (0-based index, list of raw tag tokens).
+     * @throws HuhhhException If parsing fails.
+     */
+    public static ParsedIndexAndTags parseIndexAndTags(String rawArguments) throws HuhhhException {
+        if (rawArguments == null || rawArguments.trim().isEmpty()) {
+            throw new HuhhhException("Expected an index and at least one tag. Usage: (un)tag <index> #tag [#tag...]");
+        }
+        String[] parts = rawArguments.trim().split("\\s+");
+        if (parts.length < 2) {
+            throw new HuhhhException("Expected an index and at least one tag. Usage: (un)tag <index> #tag [#tag...]");
+        }
+        int index = parseIndex(parts[0]);
+        List<String> tags = Arrays.stream(parts)
+                .skip(1)
+                .filter(t -> !t.isBlank())
+                .collect(Collectors.toList());
+        for (String t : tags) {
+            if (!t.startsWith("#")) {
+                throw new HuhhhException("Tags must start with '#'. Invalid tag: " + t);
+            }
+        }
+        return new ParsedIndexAndTags(index, tags);
+    }
+
+    /**
      * Most basic structure to hold a parsed command and its arguments.
      */
     public static class ParsedCommand {
@@ -93,6 +124,32 @@ public class Parser {
 
         public String getArguments() {
             return arguments;
+        }
+    }
+
+    /**
+     * Holder for an index + tags argument parse.
+     */
+    public static class ParsedIndexAndTags {
+        private final int index;
+        private final List<String> tags;
+
+        /**
+         * Constructs a ParsedIndexAndTags with the given index and tags.
+         * @param index 0-based index
+         * @param tags List of raw tag tokens
+         */
+        public ParsedIndexAndTags(int index, List<String> tags) {
+            this.index = index;
+            this.tags = tags;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public List<String> getTags() {
+            return tags;
         }
     }
 }

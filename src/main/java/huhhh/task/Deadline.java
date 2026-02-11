@@ -30,9 +30,17 @@ public class Deadline extends Task {
 
     @Override
     public String serialisedString() {
-        return String.format("D | %d | %s | %s",
+        String tagsField = serialisedTagsField();
+        if (tagsField.isEmpty()) {
+            return String.format("D | %d | %s | %s",
+                    super.isDone() ? 1 : 0,
+                    super.getDescription(),
+                    by.format(STORAGE_FORMAT));
+        }
+        return String.format("D | %d | %s | %s | %s",
                 super.isDone() ? 1 : 0,
                 super.getDescription(),
-                by.format(STORAGE_FORMAT));
+                by.format(STORAGE_FORMAT),
+                tagsField);
     }
 }
