@@ -151,6 +151,7 @@ public class Huhhh {
         if (description.isEmpty()) {
             throw new HuhhhException("Todo task must have a description.\nUsage: todo <desc>");
         }
+        assert !description.isBlank() : "Todo description should be non-blank after validation";
         return new Todo(description);
     }
 
@@ -200,6 +201,7 @@ public class Huhhh {
             throw new HuhhhException(
                     "Event task must have a specified /to date.\nUsage: event <desc> /from <date> /to <date>");
         }
+        assert !from.isBlank() && !to.isBlank() : "Event from/to should be non-blank after validation";
         return new Event(desc, from, to);
     }
 

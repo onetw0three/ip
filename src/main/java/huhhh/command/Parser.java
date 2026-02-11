@@ -26,12 +26,17 @@ public class Parser {
             throw new HuhhhException("Command cannot be empty.");
         }
         String[] parts = trimmed.split(" ", 2);
+        assert parts.length >= 1 : "Splitting a non-empty command should yield at least 1 token";
+
         Command command = Command.fromString(parts[0]);
         if (command == Command.UNKNOWN) {
             throw new HuhhhException("I'm sorry, but I don't know what that means :(");
         }
         String arguments = parts.length > 1 ? parts[1] : "";
-        return new ParsedCommand(command, arguments);
+        ParsedCommand parsed = new ParsedCommand(command, arguments);
+        assert parsed.getCommand() != null && parsed.getCommand() != Command.UNKNOWN
+                : "Parsed command should be a known command";
+        return parsed;
     }
 
     /**

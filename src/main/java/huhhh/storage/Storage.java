@@ -99,6 +99,7 @@ public class Storage {
         String[] parts = line.split("\\|");
         for (int i = 0; i < parts.length; i++) {
             parts[i] = parts[i].trim();
+            assert parts[i] != null : "Trimming a split token should never yield null";
         }
         if (parts.length < 3) {
             throw new HuhhhException("Corrupted save entry: " + line);
@@ -132,6 +133,7 @@ public class Storage {
         default:
             throw new HuhhhException("Unknown task type in save: " + type);
         }
+
         if (isDone) {
             task.markAsDone();
         }
@@ -144,7 +146,7 @@ public class Storage {
      * @param value The raw completion flag value.
      * @param rawLine The full raw storage line (for error reporting).
      * @return True if the task is marked done, false otherwise.
-     * @throws HuhhhException
+     * @throws HuhhhException If the completion flag is not 0 or 1.
      */
     private boolean parseDone(String value, String rawLine) throws HuhhhException {
         if ("1".equals(value)) {
