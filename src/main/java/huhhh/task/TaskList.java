@@ -34,7 +34,7 @@ public class TaskList {
      *
      * @param index The index of the task to be deleted.
      * @return The deleted task.
-     * @throws HuhhhException
+     * @throws HuhhhException if the index is out of bounds.
      */
     public Task delete(int index) throws HuhhhException {
         Task task = getTask(index);
@@ -47,7 +47,7 @@ public class TaskList {
      *
      * @param index The index of the task to be marked.
      * @return The marked task.
-     * @throws HuhhhException
+     * @throws HuhhhException if the index is out of bounds.
      */
     public Task mark(int index) throws HuhhhException {
         Task task = getTask(index);
@@ -60,7 +60,7 @@ public class TaskList {
      *
      * @param index The index of the task to be unmarked.
      * @return The unmarked task.
-     * @throws HuhhhException
+     * @throws HuhhhException if the index is out of bounds.
      */
     public Task unmark(int index) throws HuhhhException {
         Task task = getTask(index);
@@ -91,7 +91,7 @@ public class TaskList {
      *
      * @param index The index of the task to retrieve.
      * @return The task at the specified index.
-     * @throws HuhhhException
+     * @throws HuhhhException if the index is out of bounds.
      */
     private Task getTask(int index) throws HuhhhException {
         if (index < 0 || index >= tasks.size()) {
