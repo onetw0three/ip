@@ -30,6 +30,9 @@ public class Deadline extends Task {
 
     @Override
     public String serialisedString() {
-        return String.format("D | %d | %s | %s", isDone ? 1 : 0, description, by.format(STORAGE_FORMAT));
+        return String.format("D | %d | %s | %s",
+                super.isDone() ? 1 : 0,
+                super.getDescription(),
+                by.format(STORAGE_FORMAT));
     }
 }

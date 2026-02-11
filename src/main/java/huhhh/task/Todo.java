@@ -15,6 +15,7 @@ public class Todo extends Task {
 
     @Override
     public String serialisedString() {
-        return String.format("T | %d | %s", isDone ? 1 : 0, description);
+        return String.format("T | %d | %s",
+                super.isDone() ? 1 : 0, super.getDescription());
     }
 }
