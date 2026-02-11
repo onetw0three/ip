@@ -27,6 +27,7 @@ public class Event extends Task {
 
     @Override
     public String serialisedString() {
-        return String.format("E | %d | %s | %s | %s", isDone ? 1 : 0, description, from, to);
+        return String.format("E | %d | %s | %s | %s",
+                super.isDone() ? 1 : 0, super.getDescription(), from, to);
     }
 }

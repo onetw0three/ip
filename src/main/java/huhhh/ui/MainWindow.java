@@ -16,6 +16,9 @@ import javafx.scene.layout.VBox;
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
+    private static final String USER_IMAGE_RESOURCE_PATH = "/images/DaUser.png";
+    private static final String HUHHH_IMAGE_RESOURCE_PATH = "/images/DaHuhhh.png";
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -28,10 +31,13 @@ public class MainWindow extends AnchorPane {
     private Huhhh huhhh;
 
     private final Image userImage = new Image(
-            Objects.requireNonNull(this.getClass().getResourceAsStream("/images/DaUser.png")));
+            Objects.requireNonNull(this.getClass().getResourceAsStream(USER_IMAGE_RESOURCE_PATH)));
     private final Image huhhhImage = new Image(
-            Objects.requireNonNull(this.getClass().getResourceAsStream("/images/DaHuhhh.png")));
+            Objects.requireNonNull(this.getClass().getResourceAsStream(HUHHH_IMAGE_RESOURCE_PATH)));
 
+    /**
+     * Initializes the main window controller.
+     */
     @FXML
     public void initialize() {
         assert scrollPane != null : "fx:id 'scrollPane' was not injected. Check MainWindow.fxml.";
@@ -50,6 +56,8 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
+        assert huhhh != null : "Huhhh instance not injected; call setHuhhh() before user interaction.";
+
         String input = userInput.getText();
         String response = huhhh.getResponse(input);
         dialogContainer.getChildren().addAll(

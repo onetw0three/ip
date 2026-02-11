@@ -5,8 +5,8 @@ package huhhh.task;
  * To be used as a base class for specific task types.
  */
 public abstract class Task {
-    protected String description;
-    protected boolean isDone;
+    private final String description;
+    private boolean isDone;
 
     /**
      * Constructs a Task with the given description.
@@ -19,12 +19,29 @@ public abstract class Task {
     }
 
     /**
-     * Returns true if keyword is in the task description
-     *
-     * @param keyword String to search for in the description
-     * @return true if a keyword is found in the description
+     * Returns the task description.
      */
-    public Boolean containsKeyword(String keyword) {
+    protected String getDescription() {
+        return description;
+    }
+
+    /**
+     * Returns true if the task is marked done.
+     */
+    protected boolean isDone() {
+        return isDone;
+    }
+
+    /**
+     * Returns true if {@code keyword} is contained in the task description.
+     *
+     * @param keyword String to search for in the description.
+     * @return true if the keyword is found in the description.
+     */
+    public boolean containsKeyword(String keyword) {
+        if (keyword == null) {
+            return false;
+        }
         return description.contains(keyword);
     }
 
@@ -51,6 +68,7 @@ public abstract class Task {
         this.isDone = false;
     }
 
+    @Override
     public String toString() {
         return String.format("[%s] %s", getStatusIcon(), description);
     }
