@@ -89,6 +89,6 @@ public class StorageTest {
         Storage storage = new Storage(createTempFileWithContent("T | 0 | read book | fun,School\n"));
         List<Task> loaded = storage.load();
         assertEquals(1, loaded.size());
-        assertEquals("[T][ ] read book [#fun #school]", loaded.get(0).toString());
+        assertEquals("[T][ ] read book (#fun #school)", loaded.get(0).toString());
     }
 }

@@ -24,7 +24,7 @@ public class TaskTaggingTest {
 
         assertTrue(t.hasTag("#FUN"));
         assertTrue(t.hasTag("fun"));
-        assertEquals("[T][ ] read book [#fun]", t.toString());
+        assertEquals("[T][ ] read book (#fun)", t.toString());
     }
 
     @Test
